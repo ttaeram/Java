@@ -11,6 +11,7 @@ public class SessionUser implements Serializable {
     private String email;
     private String picture;
 
+    // User 엔티티에서 필요한 정보만 추출하여 세션에 저장
     public SessionUser(User user) {
         this.name = user.getName();
         this.email = user.getEmail();

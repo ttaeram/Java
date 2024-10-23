@@ -1,12 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spring_board?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: user
-    password: 1234
+    url: jdbc:mysql://localhost:3306/board_1?useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password: rr000628
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false
     show-sql: true
     hibernate:
@@ -31,3 +31,5 @@ spring:
             descriptor:
               sql:
                 BasicBinder: TRACE
+
+debug: true
