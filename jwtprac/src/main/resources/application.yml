@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog
+    username: root
+    password: rr000628
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  issuer: ryu.taeram@gmail.com
+  secretKey: 3f12d307afa6f194fbd7ae69261277234b75e0bc7fa16d09442c689768b29883
