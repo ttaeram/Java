@@ -70,7 +70,7 @@ public class SecurityConfig {
         // 경로별 인가
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/reissue").permitAll()
+                        .requestMatchers("/login", "/", "/signup", "/reissue").permitAll()
 //                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );

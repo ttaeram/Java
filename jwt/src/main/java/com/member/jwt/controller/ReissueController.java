@@ -74,16 +74,16 @@ public class ReissueController {
             return new ResponseEntity<>("refresh token invalid", HttpStatus.BAD_REQUEST);
         }
 
-        String username = jwtUtil.getUsername(refresh);
+        String email = jwtUtil.getEmail(refresh);
         String role = jwtUtil.getRole(refresh);
 
         // JWT 재발급
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", email, role, 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
 
         // refresh 토큰 저장 DB에 기존의 refresh 토큰 삭제 후 새 refresh 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(username, newRefresh, 86400000L);
+        addRefreshEntity(email, newRefresh, 86400000L);
 
         // response
         response.setHeader("access", newAccess);
@@ -103,13 +103,13 @@ public class ReissueController {
         return cookie;
     }
 
-    private void addRefreshEntity(String username, String newRefresh, Long expiredMs) {
+    private void addRefreshEntity(String email, String newRefresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         RefreshEntity refreshEntity = new RefreshEntity();
         refreshEntity.setRefresh(newRefresh);
-        refreshEntity.setUsername(username);
+        refreshEntity.setEmail(email);
         refreshEntity.setExpiration(date.toString());
 
         refreshRepository.save(refreshEntity);
