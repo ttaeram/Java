@@ -18,78 +18,58 @@ public class CustomLogoutFilter extends GenericFilterBean {
     private final RefreshRepository refreshRepository;
 
     public CustomLogoutFilter(JWTUtil jwtUtil, RefreshRepository refreshRepository) {
-
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Request Method: " + request.getMethod());
+        System.out.println("Authorization Header: " + request.getHeader("Authorization"));
 
-        // path and method verify
+        // Logout path and method verification
         String requestURI = request.getRequestURI();
-        if (!requestURI.matches("^\\\\/logout$")) {
-
+        if (!requestURI.equals("/logout") || !request.getMethod().equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String requestMethod = request.getMethod();
-        if (!requestMethod.equals("POST")) {
+        System.out.println("Logout filter activated for /logout");
 
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // get frefresh token
+        // Get refresh token from cookies
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-
-            if (cookie.getName().equals("refresh")) {
-
-                refresh = cookie.getValue();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh")) {
+                    refresh = cookie.getValue();
+                    break;
+                }
             }
         }
 
-        // refresh null check
-        if (refresh == null) {
-
+        // Validate refresh token
+        if (refresh == null || !jwtUtil.getCategory(refresh).equals("refresh") || !refreshRepository.existsByRefresh(refresh)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid refresh token.");
             return;
         }
 
-        // 토큰이 refresh인지 확인 (발급 시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
-        if (!category.equals("refresh")) {
+        // Remove refresh token from database
+        refreshRepository.deleteByEmail(jwtUtil.getEmail(refresh));
 
-            // refresh status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        // DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (!isExist) {
-
-            // refresh status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-
-        // 로그아웃 진행, refresh token DB에서 제거
-        refreshRepository.deleteByRefresh(refresh);
-
-        // refresh 토큰 cookie 값 0
+        // Expire the refresh token cookie
         Cookie cookie = new Cookie("refresh", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("Logged out successfully.");
     }
 }

@@ -1,5 +1,6 @@
 package com.member.jwt.dto;
 
+import com.member.jwt.entity.MemberEntity;
 import com.member.jwt.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,11 +11,11 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final UserEntity userEntity;
+    private final MemberEntity memberEntity;
 
-    public CustomUserDetails(UserEntity userEntity) {
+    public CustomUserDetails(MemberEntity memberEntity) {
 
-        this.userEntity = userEntity;
+        this.memberEntity = memberEntity;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return userEntity.getRole();
+                return memberEntity.getRole();
             }
         });
 
@@ -36,18 +37,18 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
 
-        return userEntity.getPassword();
+        return memberEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
 
-        return userEntity.getEmail();
+        return memberEntity.getEmail();
     }
 
     public String getNickname() {
 
-        return userEntity.getNickname();
+        return memberEntity.getNickname();
     }
 
     @Override

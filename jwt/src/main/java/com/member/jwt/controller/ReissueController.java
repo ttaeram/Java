@@ -82,7 +82,7 @@ public class ReissueController {
         String newRefresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
 
         // refresh 토큰 저장 DB에 기존의 refresh 토큰 삭제 후 새 refresh 토큰 저장
-        refreshRepository.deleteByRefresh(refresh);
+        refreshRepository.deleteByEmail(email);
         addRefreshEntity(email, newRefresh, 86400000L);
 
         // response
