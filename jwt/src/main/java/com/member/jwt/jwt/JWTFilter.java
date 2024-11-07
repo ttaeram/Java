@@ -3,6 +3,7 @@ package com.member.jwt.jwt;
 import com.member.jwt.dto.CustomUserDetails;
 import com.member.jwt.entity.MemberEntity;
 import com.member.jwt.repository.MemberRepository;
+import com.member.jwt.service.TokenBlacklistService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +20,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public JWTFilter(JWTUtil jwtUtil, MemberRepository memberRepository) {
+    public JWTFilter(JWTUtil jwtUtil, MemberRepository memberRepository, TokenBlacklistService tokenBlacklistService) {
         this.jwtUtil = jwtUtil;
         this.memberRepository = memberRepository;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -37,6 +40,14 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         accessToken = accessToken.substring(7); // "Bearer " 제거
+
+        // 블랙리스트에 있는지 확인
+        if (tokenBlacklistService.isBlacklisted(accessToken)) {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().print("블랙리스트에 속한 토큰입니다.");
+            return;
+        }
 
         // 토큰 만료 여부 확인
         try {

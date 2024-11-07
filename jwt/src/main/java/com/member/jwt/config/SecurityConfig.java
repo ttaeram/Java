@@ -5,6 +5,7 @@ import com.member.jwt.jwt.JWTUtil;
 import com.member.jwt.repository.MemberRepository;
 import com.member.jwt.repository.RefreshRepository;
 import com.member.jwt.service.CustomMemberDetailService;
+import com.member.jwt.service.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,12 +31,14 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final CustomMemberDetailService customMemberDetailService;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository, CustomMemberDetailService customMemberDetailService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository, CustomMemberDetailService customMemberDetailService, TokenBlacklistService tokenBlacklistService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
         this.customMemberDetailService = customMemberDetailService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Bean
@@ -69,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth", "auth-logout").authenticated()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil, memberRepository, tokenBlacklistService), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors((cors) -> cors.configurationSource(new CorsConfigurationSource() {
                     @Override
