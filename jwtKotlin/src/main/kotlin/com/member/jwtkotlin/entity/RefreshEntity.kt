@@ -1,4 +1,4 @@
-package com.member.jwtkotlin.entity
+package com.member.jwt.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -7,11 +7,12 @@ import jakarta.persistence.Id
 
 @Entity
 class RefreshEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0
+    var id: Long? = null
 
-    var username: String? = null
+    var email: String? = null
     var refresh: String? = null
     var expiration: String? = null
 }

@@ -1,4 +1,4 @@
-package com.member.jwtkotlin.jwt
+package com.member.jwt.jwt
 
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value
@@ -8,15 +8,14 @@ import java.util.*
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
-
 @Component
 class JWTUtil(@Value("\${spring.jwt.secret}") secret: String) {
     private val secretKey: SecretKey =
         SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().algorithm)
 
-    fun getUsername(token: String?): String {
+    fun getEmail(token: String?): String {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).payload.get(
-            "username",
+            "email",
             String::class.java
         )
     }
@@ -39,10 +38,19 @@ class JWTUtil(@Value("\${spring.jwt.secret}") secret: String) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).payload.expiration.before(Date())
     }
 
-    fun createJwt(category: String?, username: String?, role: String?, expiredMs: Long): String {
+    fun getExpiration(token: String?): Date {
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .payload
+            .expiration
+    }
+
+    fun createJwt(category: String?, email: String?, role: String?, expiredMs: Long): String {
         return Jwts.builder()
             .claim("category", category)
-            .claim("username", username)
+            .claim("email", email)
             .claim("role", role)
             .issuedAt(Date(System.currentTimeMillis()))
             .expiration(Date(System.currentTimeMillis() + expiredMs))

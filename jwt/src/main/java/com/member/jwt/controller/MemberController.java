@@ -2,6 +2,7 @@ package com.member.jwt.controller;
 
 import com.member.jwt.dto.LoginResponseDto;
 import com.member.jwt.dto.MemberInfoDto;
+import com.member.jwt.dto.MemberUpdateDto;
 import com.member.jwt.service.LoginService;
 import com.member.jwt.service.MemberService;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,12 @@ public class MemberController {
         return ResponseEntity.ok(memberInfo);
     }
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<MemberInfoDto> updateMemberInfo(
             @RequestParam Integer memberId,
-            @RequestBody MemberInfoDto memberInfoDto) {
+            @ModelAttribute MemberUpdateDto memberUpdateDto) {
 
-        MemberInfoDto updatedMemberInfo = memberService.updateMemberInfo(memberId, memberInfoDto);
+        MemberInfoDto updatedMemberInfo = memberService.updateMemberInfo(memberId, memberUpdateDto);
         return ResponseEntity.ok(updatedMemberInfo);
     }
 

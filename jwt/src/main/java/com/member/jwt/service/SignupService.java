@@ -3,6 +3,7 @@ package com.member.jwt.service;
 import com.member.jwt.dto.SignupRequestDto;
 import com.member.jwt.entity.MemberEntity;
 import com.member.jwt.repository.MemberRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +34,7 @@ public class SignupService {
         // 이메일 중복 체크
         if (memberRepository.existsByEmail(email)) {
 
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            throw new DataIntegrityViolationException("이미 사용 중인 이메일입니다.");
         }
 
         // 비밀번호 암호화

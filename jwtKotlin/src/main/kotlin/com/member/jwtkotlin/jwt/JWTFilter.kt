@@ -1,7 +1,8 @@
-package com.member.jwtkotlin.jwt
+package com.member.jwt.jwt
 
-import com.member.jwtkotlin.dto.CustomUserDetails
-import com.member.jwtkotlin.repository.UserRepository
+import com.member.jwt.dto.CustomUserDetails
+import com.member.jwt.repository.MemberRepository
+import com.member.jwt.service.TokenBlacklistService
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -12,11 +13,16 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
+import java.util.function.Supplier
 
 class JWTFilter(
-    private val jwtUtil: JWTUtil,
-    private val userRepository: UserRepository
-) : OncePerRequestFilter() {
+    jwtUtil: JWTUtil,
+    private val memberRepository: MemberRepository,
+    tokenBlacklistService: TokenBlacklistService
+) :
+    OncePerRequestFilter() {
+    private val jwtUtil: JWTUtil = jwtUtil
+    private val tokenBlacklistService: TokenBlacklistService = tokenBlacklistService
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
@@ -24,46 +30,51 @@ class JWTFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authorizationHeader = request.getHeader("Authorization")
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            println("No valid token provided")
+        // 헤더에서 access에 담긴 토큰 꺼내기
+        var accessToken = request.getHeader("Authorization")
+
+        // 토큰이 없는 경우 다음 필터로
+        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
             filterChain.doFilter(request, response)
             return
         }
 
-        val accessToken = authorizationHeader.substring(7) // "Bearer " 제거
-        println("Access token: $accessToken")
+        accessToken = accessToken.substring(7) // "Bearer " 제거
 
-        // 나머지 코드 유지
+        // 블랙리스트에 있는지 확인
+        if (tokenBlacklistService.isBlacklisted(accessToken)) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.writer.print("블랙리스트에 속한 토큰입니다.")
+            return
+        }
+
+        // 토큰 만료 여부 확인
         try {
             jwtUtil.isExpired(accessToken)
         } catch (e: ExpiredJwtException) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
             response.writer.print("access token expired")
-            response.status = HttpServletResponse.SC_UNAUTHORIZED
             return
         }
 
-        val category = jwtUtil.getCategory(accessToken)
+        // 토큰이 access인지 확인
+        val category: String = jwtUtil.getCategory(accessToken)
         if (category != "access") {
-            response.writer.print("invalid access token")
             response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.writer.print("invalid access token")
             return
         }
 
-        val username = jwtUtil.getUsername(accessToken)
-        val userEntity = userRepository.findByUsername(username)
-            ?: run {
-                response.writer.print("user not found")
-                response.status = HttpServletResponse.SC_UNAUTHORIZED
-                return
-            }
+        // email 값 획득 후 사용자 조회
+        val email: String = jwtUtil.getEmail(accessToken)
+        val memberEntity = memberRepository.findByEmail(email)
+            ?.orElseThrow(Supplier { IllegalArgumentException("사용자를 찾을 수 없습니다.") })!!
 
-        val customUserDetails = CustomUserDetails(userEntity)
-        val authToken: Authentication = UsernamePasswordAuthenticationToken(
-            customUserDetails, null, customUserDetails.authorities
-        )
+        // 사용자 권한 설정
+        val customUserDetails = CustomUserDetails(memberEntity)
+        val authToken: Authentication =
+            UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.authorities)
         SecurityContextHolder.getContext().authentication = authToken
-        println("Authentication set in SecurityContextHolder")
 
         filterChain.doFilter(request, response)
     }

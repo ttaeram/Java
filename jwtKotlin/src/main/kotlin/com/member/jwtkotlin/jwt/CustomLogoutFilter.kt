@@ -1,6 +1,6 @@
-package com.member.jwtkotlin.jwt
+package com.member.jwt.jwt
 
-import com.member.jwtkotlin.repository.RefreshRepository
+import com.member.jwt.repository.RefreshRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.ServletRequest
@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.filter.GenericFilterBean
 import java.io.IOException
 
-class CustomLogoutFilter(private val jwtUtil: JWTUtil, refreshRepository: RefreshRepository) : GenericFilterBean() {
-    private val refreshRepository: RefreshRepository = refreshRepository
+class CustomLogoutFilter(jwtUtil: JWTUtil, private val refreshRepository: RefreshRepository) : GenericFilterBean() {
+    private val jwtUtil: JWTUtil = jwtUtil
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
@@ -21,61 +21,51 @@ class CustomLogoutFilter(private val jwtUtil: JWTUtil, refreshRepository: Refres
 
     @Throws(IOException::class, ServletException::class)
     private fun doFilter(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        // path and method verify
+        println("Request URI: " + request.requestURI)
+        println("Request Method: " + request.method)
+        println("Authorization Header: " + request.getHeader("Authorization"))
 
+        // Logout path and method verification
         val requestURI = request.requestURI
-        if (!requestURI.matches("^\\\\/logout$".toRegex())) {
+        if (requestURI != "/logout" || request.method != "POST") {
             filterChain.doFilter(request, response)
             return
         }
 
-        val requestMethod = request.method
-        if (requestMethod != "POST") {
-            filterChain.doFilter(request, response)
-            return
-        }
+        println("Logout filter activated for /logout")
 
-        // get frefresh token
+        // Get refresh token from cookies
         var refresh: String? = null
         val cookies = request.cookies
-        for (cookie in cookies) {
-            if (cookie.name == "refresh") {
-                refresh = cookie.value
+        if (cookies != null) {
+            for (cookie in cookies) {
+                if (cookie.name == "refresh") {
+                    refresh = cookie.value
+                    break
+                }
             }
         }
 
-        // refresh null check
-        if (refresh == null) {
+        // Validate refresh token
+        if (refresh == null || !jwtUtil.getCategory(refresh).equals("refresh") || !refreshRepository.existsByRefresh(
+                refresh
+            )!!
+        ) {
             response.status = HttpServletResponse.SC_BAD_REQUEST
+            response.writer.write("Invalid refresh token.")
             return
         }
 
-        // 토큰이 refresh인지 확인 (발급 시 페이로드에 명시)
-        val category = jwtUtil.getCategory(refresh)
-        if (category != "refresh") {
-            // refresh status code
+        // Remove refresh token from database
+        refreshRepository.deleteByEmail(jwtUtil.getEmail(refresh))
 
-            response.status = HttpServletResponse.SC_BAD_REQUEST
-            return
-        }
-
-        // DB에 저장되어 있는지 확인
-        val isExist: Boolean = refreshRepository.existsByRefresh(refresh)
-        if (!isExist) {
-            // refresh status code
-
-            response.status = HttpServletResponse.SC_BAD_REQUEST
-        }
-
-        // 로그아웃 진행, refresh token DB에서 제거
-        refreshRepository.deleteByRefresh(refresh)
-
-        // refresh 토큰 cookie 값 0
+        // Expire the refresh token cookie
         val cookie = Cookie("refresh", null)
         cookie.maxAge = 0
         cookie.path = "/"
 
         response.addCookie(cookie)
         response.status = HttpServletResponse.SC_OK
+        response.writer.write("Logged out successfully.")
     }
 }
