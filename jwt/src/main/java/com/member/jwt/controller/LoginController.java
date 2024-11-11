@@ -2,9 +2,10 @@ package com.member.jwt.controller;
 
 import com.member.jwt.dto.LoginResponseDto;
 import com.member.jwt.service.LoginService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/login")
@@ -13,20 +14,17 @@ public class LoginController {
     private final LoginService loginService;
 
     public LoginController(LoginService loginService) {
-
         this.loginService = loginService;
     }
 
-    // 로그인 엔드포인트
     @PostMapping
     public ResponseEntity<LoginResponseDto> login(@RequestParam String email, @RequestParam String password) {
-        LoginResponseDto loginResponseDto = loginService.login(email, password);
-        return ResponseEntity.ok(loginResponseDto);
-    }
-
-    // 예외 처리 핸들러 추가
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
-        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+        try {
+            LoginResponseDto response = loginService.login(email, password);
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException ex) {
+            // 특정 인증 실패 예외를 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 }

@@ -1,8 +1,8 @@
-package com.member.jwt.service
+package com.member.jwtkotlin.service
 
-import com.member.jwt.dto.SignupRequestDto
-import com.member.jwt.entity.MemberEntity
-import com.member.jwt.repository.MemberRepository
+import com.member.jwtkotlin.dto.SignupRequestDto
+import com.member.jwtkotlin.entity.MemberEntity
+import com.member.jwtkotlin.repository.MemberRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service

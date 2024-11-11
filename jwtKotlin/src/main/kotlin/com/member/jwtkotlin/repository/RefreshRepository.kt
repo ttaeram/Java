@@ -1,4 +1,4 @@
-package com.member.jwt.repository
+package com.member.jwtkotlin.repository
 
 import com.member.jwtkotlin.entity.RefreshEntity
 import jakarta.transaction.Transactional

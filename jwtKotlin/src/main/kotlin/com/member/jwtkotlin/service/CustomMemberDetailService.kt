@@ -1,7 +1,7 @@
-package com.member.jwt.service
+package com.member.jwtkotlin.service
 
-import com.member.jwt.dto.CustomUserDetails
-import com.member.jwt.repository.MemberRepository
+import com.member.jwtkotlin.dto.CustomUserDetails
+import com.member.jwtkotlin.repository.MemberRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

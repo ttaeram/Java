@@ -1,4 +1,4 @@
-package com.member.jwt.entity
+package com.member.jwtkotlin.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

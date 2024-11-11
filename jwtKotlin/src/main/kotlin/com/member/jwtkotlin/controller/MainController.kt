@@ -1,4 +1,4 @@
-package com.member.jwt.controller
+package com.member.jwtkotlin.controller
 
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller

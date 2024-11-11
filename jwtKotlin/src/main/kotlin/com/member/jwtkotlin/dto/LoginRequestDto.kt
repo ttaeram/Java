@@ -1,4 +1,4 @@
-package com.member.jwt.dto
+package com.member.jwtkotlin.dto
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

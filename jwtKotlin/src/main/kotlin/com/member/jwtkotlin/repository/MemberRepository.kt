@@ -1,6 +1,6 @@
-package com.member.jwt.repository
+package com.member.jwtkotlin.repository
 
-import com.member.jwt.entity.MemberEntity
+import com.member.jwtkotlin.entity.MemberEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

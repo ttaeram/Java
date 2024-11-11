@@ -1,9 +1,9 @@
-package com.member.jwt.service
+package com.member.jwtkotlin.service
 
-import com.member.jwt.dto.MemberInfoDto
-import com.member.jwt.dto.MemberUpdateDto
-import com.member.jwt.entity.MemberEntity
-import com.member.jwt.repository.MemberRepository
+import com.member.jwtkotlin.dto.MemberInfoDto
+import com.member.jwtkotlin.dto.MemberUpdateDto
+import com.member.jwtkotlin.entity.MemberEntity
+import com.member.jwtkotlin.repository.MemberRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -1,8 +1,8 @@
-package com.member.jwt.controller
+package com.member.jwtkotlin.controller
 
-import com.member.jwt.jwt.JWTUtil
-import com.member.jwt.repository.RefreshRepository
-import com.member.jwt.service.TokenBlacklistService
+import com.member.jwtkotlin.jwt.JWTUtil
+import com.member.jwtkotlin.repository.RefreshRepository
+import com.member.jwtkotlin.service.TokenBlacklistService
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

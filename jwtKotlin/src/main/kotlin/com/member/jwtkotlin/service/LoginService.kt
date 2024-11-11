@@ -1,11 +1,11 @@
-package com.member.jwt.service
+package com.member.jwtkotlin.service
 
-import com.member.jwt.dto.LoginResponseDto
-import com.member.jwt.dto.MemberInfoDto
-import com.member.jwt.entity.RefreshEntity
-import com.member.jwt.jwt.JWTUtil
-import com.member.jwt.repository.MemberRepository
-import com.member.jwt.repository.RefreshRepository
+import com.member.jwtkotlin.dto.LoginResponseDto
+import com.member.jwtkotlin.dto.MemberInfoDto
+import com.member.jwtkotlin.entity.RefreshEntity
+import com.member.jwtkotlin.jwt.JWTUtil
+import com.member.jwtkotlin.repository.MemberRepository
+import com.member.jwtkotlin.repository.RefreshRepository
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException

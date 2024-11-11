@@ -1,8 +1,8 @@
-package com.member.jwt.controller
+package com.member.jwtkotlin.controller
 
-import com.member.jwt.dto.SignupRequestDto
-import com.member.jwt.dto.SignupResponseDto
-import com.member.jwt.service.SignupService
+import com.member.jwtkotlin.dto.SignupRequestDto
+import com.member.jwtkotlin.dto.SignupResponseDto
+import com.member.jwtkotlin.service.SignupService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

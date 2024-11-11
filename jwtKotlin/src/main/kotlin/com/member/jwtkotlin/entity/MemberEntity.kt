@@ -1,6 +1,6 @@
-package com.member.jwt.entity
+package com.member.jwtkotlin.entity
 
-import com.member.jwt.dto.SignupRequestDto
+import com.member.jwtkotlin.dto.SignupRequestDto
 import jakarta.persistence.*
 
 @Entity

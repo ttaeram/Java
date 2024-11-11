@@ -1,6 +1,6 @@
-package com.member.jwt.jwt
+package com.member.jwtkotlin.jwt
 
-import com.member.jwt.repository.RefreshRepository
+import com.member.jwtkotlin.repository.RefreshRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.ServletRequest

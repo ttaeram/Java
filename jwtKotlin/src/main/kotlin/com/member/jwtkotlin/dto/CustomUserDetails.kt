@@ -1,6 +1,6 @@
-package com.member.jwt.dto
+package com.member.jwtkotlin.dto
 
-import com.member.jwt.entity.MemberEntity
+import com.member.jwtkotlin.entity.MemberEntity
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 

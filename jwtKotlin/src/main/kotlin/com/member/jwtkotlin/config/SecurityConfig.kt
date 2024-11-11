@@ -1,11 +1,11 @@
-package com.member.jwt.config
+package com.member.jwtkotlin.config
 
-import com.member.jwt.jwt.JWTFilter
-import com.member.jwt.jwt.JWTUtil
-import com.member.jwt.repository.MemberRepository
-import com.member.jwt.repository.RefreshRepository
-import com.member.jwt.service.CustomMemberDetailService
-import com.member.jwt.service.TokenBlacklistService
+import com.member.jwtkotlin.jwt.JWTFilter
+import com.member.jwtkotlin.jwt.JWTUtil
+import com.member.jwtkotlin.repository.MemberRepository
+import com.member.jwtkotlin.repository.RefreshRepository
+import com.member.jwtkotlin.service.CustomMemberDetailService
+import com.member.jwtkotlin.service.TokenBlacklistService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

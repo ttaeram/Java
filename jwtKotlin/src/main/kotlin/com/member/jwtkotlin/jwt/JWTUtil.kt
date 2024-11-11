@@ -1,4 +1,4 @@
-package com.member.jwt.jwt
+package com.member.jwtkotlin.jwt
 
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value

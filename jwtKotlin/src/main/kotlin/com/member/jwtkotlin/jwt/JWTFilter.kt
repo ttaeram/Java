@@ -1,8 +1,8 @@
-package com.member.jwt.jwt
+package com.member.jwtkotlin.jwt
 
-import com.member.jwt.dto.CustomUserDetails
-import com.member.jwt.repository.MemberRepository
-import com.member.jwt.service.TokenBlacklistService
+import com.member.jwtkotlin.dto.CustomUserDetails
+import com.member.jwtkotlin.repository.MemberRepository
+import com.member.jwtkotlin.service.TokenBlacklistService
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException

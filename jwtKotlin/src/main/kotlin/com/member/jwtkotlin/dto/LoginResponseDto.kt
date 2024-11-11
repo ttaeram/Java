@@ -1,4 +1,4 @@
-package com.member.jwt.dto
+package com.member.jwtkotlin.dto
 
 data class LoginResponseDto(
     val accessToken: String?,

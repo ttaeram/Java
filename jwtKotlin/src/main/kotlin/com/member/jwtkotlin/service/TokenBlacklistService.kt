@@ -1,4 +1,4 @@
-package com.member.jwt.service
+package com.member.jwtkotlin.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
