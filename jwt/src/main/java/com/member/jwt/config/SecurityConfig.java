@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .httpBasic((basic) -> basic.disable())
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/signup").permitAll()
-                        .requestMatchers("/auth", "auth-logout").authenticated()
+                        .requestMatchers("/auth/**", "auth-logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil, memberRepository, tokenBlacklistService), UsernamePasswordAuthenticationFilter.class)
