@@ -11,9 +11,12 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configurers.*
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
@@ -51,28 +54,34 @@ class SecurityConfig(
     }
 
     @Bean
+    @Throws(Exception::class)
     fun securityFilterChain(
         http: HttpSecurity,
-        memberRepository: MemberRepository
+        refreshRepository: RefreshRepository?,
+        memberRepository: MemberRepository?
     ): SecurityFilterChain {
         http
-            .csrf { it.disable() }
-            .formLogin { it.disable() }
-            .httpBasic { it.disable() }
-            .authorizeHttpRequests {
-                it.requestMatchers("/login", "/", "/signup").permitAll()
-                    .requestMatchers("/auth", "/auth-logout").authenticated()
+            .csrf { csrf: CsrfConfigurer<HttpSecurity> -> csrf.disable() }
+            .formLogin { form: FormLoginConfigurer<HttpSecurity> -> form.disable() }
+            .httpBasic { basic: HttpBasicConfigurer<HttpSecurity> -> basic.disable() }
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers("/login", "/", "/signup").permitAll()
+                    .requestMatchers("/auth/**", "auth-logout").authenticated()
                     .anyRequest().authenticated()
             }
+
             .addFilterBefore(
-                JWTFilter(jwtUtil, memberRepository, tokenBlacklistService),
+                JWTFilter(jwtUtil, memberRepository!!, tokenBlacklistService),
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement { session: SessionManagementConfigurer<HttpSecurity?> ->
+                session.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS
+                )
             }
-            .cors {
-                it.configurationSource {
+            .cors { cors: CorsConfigurer<HttpSecurity?> ->
+                cors.configurationSource {
                     val configuration = CorsConfiguration()
                     configuration.allowedOrigins = listOf("http://localhost:3000")
                     configuration.allowedMethods = listOf("*")
